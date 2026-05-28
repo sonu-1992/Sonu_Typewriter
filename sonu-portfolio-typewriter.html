@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Write to Sonu — Sonu's UX Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Special+Elite&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* =====================================================
+     SETUP GUIDE (remove this comment block in production)
+     =====================================================
+     HOW TO ADD THIS TO YOUR FRAMER PORTFOLIO:
+
+     OPTION A — Framer Embed (Easiest, 5 minutes):
+     1. Go to vercel.com → sign up free with GitHub
+     2. Click "Add New Project" → drag this HTML file
+     3. Deploy → copy the URL (e.g. your-name.vercel.app)
+     4. In Framer: Insert → Embed → paste your Vercel URL
+     5. Resize the embed to fill your green section
+     Done ✓
+
+     OPTION B — Framer Code Component:
+     1. In Framer: Assets → Code → New Code File
+     2. Paste everything between the <body> tags as JSX
+     (requires some React wrapping — use Option A first)
+
+     HOW TO WIRE THE EMAIL (EmailJS):
+     1. Go to emailjs.com → sign up free
+     2. Add an Email Service (Gmail works great)
+     3. Create an Email Template with these variables:
+        {{from_name}}, {{from_email}}, {{subject}}, {{message}}
+     4. Copy your: Service ID, Template ID, Public Key
+     5. Replace the 3 placeholders below in the JS section:
+        YOUR_SERVICE_ID → your service id
+        YOUR_TEMPLATE_ID → your template id
+        YOUR_PUBLIC_KEY → your public key
+     6. Done — letters arrive in your inbox!
+     ===================================================== */
+
+  :root {
+    --sky: #5b9ec9;
+    --sky-light: #8ec0d8;
+    --sky-pale: #d9ebf5;
+    --sky-deep: #3a7ca5;
+    --sky-shadow: #2a5f82;
+    --butter: #f5e06e;
+    --butter-deep: #d4b832;
+    --butter-light: #fdf3a0;
+    --cream: #fafaf0;
+    --paper: #fefcf0;
+    --graph-line: rgba(100, 160, 200, 0.18);
+    --ink: #2a3f52;
+    --ink-soft: #4a6a82;
+    --muted: #7a9ab2;
+    --blue-flower: #3a6fa0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background-color: #f5f5e8;
+    /* Graph paper texture matching Sonu's portfolio */
+    background-image:
+      linear-gradient(var(--graph-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--graph-line) 1px, transparent 1px),
+      linear-gradient(rgba(100,160,200,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(100,160,200,0.06) 1px, transparent 1px);
+    background-size: 28px 28px, 28px 28px, 7px 7px, 7px 7px;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--ink);
+    overflow-x: hidden;
+    padding: 30px 20px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ======== HEADER ======== */
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+    position: relative;
+  }
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(32px, 5vw, 52px);
+    color: var(--blue-flower);
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .header p {
+    font-style: italic;
+    font-size: 19px;
+    color: var(--ink-soft);
+    max-width: 440px;
+    margin: 0 auto;
+  }
+  /* Little blue flower decorations */
+  .flower { position: absolute; opacity: 0.7; pointer-events: none; }
+  .flower svg { width: 100%; height: 100%; }
+  .flower-1 { top: -10px; left: -60px; width: 55px; transform: rotate(-20deg); }
+  .flower-2 { top: -5px; right: -55px; width: 45px; transform: rotate(15deg) scaleX(-1); }
+  .flower-3 { bottom: -20px; left: 20px; width: 35px; transform: rotate(30deg); opacity: 0.5; }
+
+  /* ======== TYPEWRITER WRAP ======== */
+  /* ======== TYPEWRITER STAGE ======== */
+  .typewriter-stage {
+    width: 100%;
+    max-width: 720px;
+    position: relative;
+  }
+
+  /* ======== PAPER WRAP — sits above typewriter in normal flow ======== */
+  .paper-wrap {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: -20px; /* tuck bottom edge behind platen */
+    position: relative;
+    z-index: 3;
+  }
+  .paper-out {
+    width: 44%;
+    max-height: 0;
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(91,158,201,0.13) 27px, rgba(91,158,201,0.13) 28px);
+    background-size: 100% 28px;
+    border: 1px solid rgba(91,158,201,0.18);
+    border-bottom: none;
+    box-shadow:
+      inset 0 0 20px rgba(245,224,110,0.05),
+      1px 0 6px rgba(58,127,165,0.07),
+      -1px 0 6px rgba(58,127,165,0.07);
+    overflow: hidden;
+    transition: max-height 1s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+  .paper-out.visible { max-height: 2000px; }
+  .paper-content {
+    padding: 32px 44px 48px;
+    font-family: 'Special Elite', monospace;
+    font-size: 13.5px;
+    line-height: 28px;
+    color: var(--ink);
+    /* Letterpress effect */
+    text-shadow:
+      0 1px 0 rgba(255,255,255,0.9),
+      0 -1px 1px rgba(58,127,165,0.2),
+      0 2px 2px rgba(0,0,0,0.04);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .paper-content .cursor {
+    display: inline-block;
+    width: 7px; height: 16px;
+    background: var(--sky-deep);
+    margin-left: 1px;
+    animation: blink 1s steps(2) infinite;
+    vertical-align: -2px;
+    border-radius: 1px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ======== TYPEWRITER SVG ======== */
+  .typewriter-svg { width: 100%; display: block; position: relative; z-index: 2; filter: drop-shadow(0 20px 36px rgba(58,127,165,0.22)); }
+
+  /* ======== KEYBOARD OVERLAY ======== */
+  .keyboard-overlay {
+    position: absolute;
+    z-index: 5;
+    bottom: 6%;
+    left: 10%;
+    right: 10%;
+    height: 38%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 4px;
+    overflow: hidden;
+  }
+  .key-row { display: flex; justify-content: center; gap: 3px; flex-wrap: nowrap; }
+  .key-row.offset-1 { padding-left: 12px; }
+  .key-row.offset-2 { padding-left: 24px; }
+
+  .vkey {
+    width: 30px; height: 30px;
+    background: radial-gradient(circle at 30% 28%, var(--butter-light) 0%, var(--butter) 55%, var(--butter-deep) 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    color: var(--ink);
+    cursor: pointer; user-select: none; position: relative;
+    box-shadow:
+      0 3px 0 #a08820,
+      0 4px 8px rgba(0,0,0,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.7),
+      inset 0 -1px 2px rgba(0,0,0,0.08);
+    transition: transform 0.06s, box-shadow 0.06s;
+    border: 1.5px solid rgba(180,150,20,0.3);
+    flex-shrink: 0;
+  }
+  .vkey .shifted { position: absolute; top: 2px; font-size: 7px; color: var(--ink-soft); line-height: 1; }
+  .vkey .base { margin-top: 3px; font-size: 11px; font-weight: 600; }
+  .vkey.special { width: auto; min-width: 46px; padding: 0 8px; font-size: 9px; border-radius: 12px; }
+  .vkey.special-wide { min-width: 66px; }
+  .vkey.pressed {
+    transform: translateY(3px);
+    box-shadow: 0 0 0 #a08820, 0 1px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.5);
+  }
+  .vkey.active-cap {
+    background: radial-gradient(circle at 30% 28%, #fff0d0 0%, #f5c840 55%, #c8a020 100%);
+    box-shadow: 0 3px 0 #806010, 0 0 10px rgba(245,200,64,0.6), inset 0 1px 0 rgba(255,255,255,0.5);
+  }
+  .spacebar-row { display: flex; justify-content: center; margin-top: 2px; }
+  .spacebar {
+    width: 54%; height: 18px;
+    background: linear-gradient(180deg, var(--butter-light), var(--butter));
+    border-radius: 6px; cursor: pointer;
+    box-shadow: 0 3px 0 #a08820, 0 4px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.6);
+    transition: transform 0.06s, box-shadow 0.06s;
+    border: 1.5px solid rgba(180,150,20,0.3);
+  }
+  .spacebar.pressed { transform: translateY(3px); box-shadow: 0 0 0 #a08820; }
+
+  /* ======== FIELDS BELOW TYPEWRITER ======== */
+  .fields-wrap {
+    width: 100%; max-width: 720px;
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+  .field-group label {
+    display: block;
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    color: var(--sky-deep);
+    margin-bottom: 4px;
+  }
+  .field-group input {
+    width: 100%;
+    background: rgba(255,255,255,0.7);
+    border: 1.5px solid rgba(91,158,201,0.35);
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-family: 'Special Elite', monospace;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    backdrop-filter: blur(4px);
+  }
+  .field-group input:focus {
+    border-color: var(--sky);
+    box-shadow: 0 0 0 3px rgba(91,158,201,0.15);
+  }
+  .field-group input::placeholder { color: var(--muted); }
+
+  /* ======== WORD COUNT + SEND ======== */
+  .bottom-row {
+    width: 100%; max-width: 720px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 18px; flex-wrap: wrap; gap: 14px;
+  }
+  .word-count {
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .send-btn {
+    background: var(--sky-deep);
+    color: white; border: none;
+    padding: 14px 34px;
+    border-radius: 100px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(58,127,165,0.3);
+    transition: all 0.3s;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .send-btn:hover {
+    background: var(--blue-flower);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(58,127,165,0.45);
+  }
+  .send-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+
+  /* ======== STAMP PICKER ======== */
+  .stamp-section {
+    width: 100%; max-width: 720px;
+    margin-top: 28px;
+  }
+  .stamp-section-label {
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    color: var(--sky-deep);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .stamp-section-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(91,158,201,0.3), transparent);
+  }
+  .stamp-row {
+    display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end;
+  }
+  .s-stamp {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    flex-shrink: 0;
+    /* perforated edge */
+    -webkit-mask:
+      radial-gradient(circle 3px at 0 0, transparent 98%, #000) repeat-y left,
+      radial-gradient(circle 3px at 100% 0, transparent 98%, #000) repeat-y right,
+      radial-gradient(circle 3px at 0 0, transparent 98%, #000) repeat-x top,
+      radial-gradient(circle 3px at 0 100%, transparent 98%, #000) repeat-x bottom,
+      linear-gradient(#000,#000);
+    -webkit-mask-size: 6px 10px, 6px 10px, 10px 6px, 10px 6px, calc(100% - 12px) calc(100% - 12px);
+    -webkit-mask-position: 0 0, 100% 0, 0 0, 0 100%, 6px 6px;
+    -webkit-mask-repeat: repeat-y, repeat-y, repeat-x, repeat-x, no-repeat;
+  }
+  .s-stamp:hover { transform: translateY(-5px) rotate(-3deg); }
+  .s-stamp.picked {
+    box-shadow: 0 0 0 3px var(--sky-deep), 0 8px 16px rgba(58,127,165,0.3);
+    transform: translateY(-4px) rotate(-2deg);
+  }
+  .s-stamp svg { display: block; }
+  .stamp-hint {
+    font-family: 'Caveat', cursive;
+    font-size: 16px; color: var(--muted);
+    font-style: italic; margin-top: 10px;
+  }
+
+  /* ======== SUCCESS STATE ======== */
+  .success-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(30,60,90,0.55);
+    backdrop-filter: blur(10px);
+    align-items: center; justify-content: center;
+    z-index: 200;
+    padding: 20px;
+  }
+  .success-overlay.show { display: flex; }
+  .success-card {
+    background: var(--paper);
+    background-image:
+      linear-gradient(rgba(91,158,201,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(91,158,201,0.08) 1px, transparent 1px);
+    background-size: 22px 22px;
+    border-radius: 20px;
+    padding: 44px;
+    max-width: 440px; width: 100%;
+    text-align: center;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+    animation: cardIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    border: 1.5px solid rgba(91,158,201,0.2);
+  }
+  @keyframes cardIn { from { opacity:0; transform:scale(0.85) rotate(-2deg); } to { opacity:1; transform:scale(1) rotate(0); } }
+  .success-card .envelope-anim {
+    font-size: 64px;
+    margin-bottom: 18px;
+    display: block;
+    animation: envFloat 3s ease-in-out infinite;
+  }
+  @keyframes envFloat { 0%,100%{transform:translateY(0) rotate(-2deg);} 50%{transform:translateY(-10px) rotate(2deg);} }
+  .success-card h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 32px;
+    color: var(--blue-flower); margin-bottom: 10px;
+  }
+  .success-card p {
+    font-style: italic; color: var(--ink-soft); font-size: 17px; margin-bottom: 28px;
+  }
+  .success-card button {
+    background: var(--sky-deep); color: white; border: none;
+    padding: 12px 28px; border-radius: 100px;
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .success-card button:hover { background: var(--blue-flower); transform: translateY(-1px); }
+
+  /* ======== TOAST ======== */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--ink); color: white;
+    padding: 11px 22px; border-radius: 100px;
+    font-family: 'Caveat', cursive; font-size: 17px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 300;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 620px) {
+    .fields-wrap { grid-template-columns: 1fr; }
+    .bottom-row { flex-direction: column; align-items: stretch; }
+    .send-btn { justify-content: center; }
+    .vkey { width: 24px; height: 24px; }
+    .vkey .base { font-size: 9px; }
+    .vkey .shifted { font-size: 6px; }
+    .vkey.special { min-width: 32px; font-size: 7px; padding: 0 4px; }
+    .vkey.special-wide { min-width: 48px; }
+    .paper-out { width: 60%; }
+    .flower-1, .flower-2, .flower-3 { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ======== HEADER ======== -->
+<div class="header">
+  <!-- Blue flower decorations (matching your portfolio style) -->
+  <span class="flower flower-1">
+    <svg viewBox="0 0 80 80" fill="none">
+      <g transform="translate(40,40)">
+        <ellipse cx="0" cy="-18" rx="9" ry="18" fill="#5b9ec9" transform="rotate(0)"/>
+        <ellipse cx="0" cy="-18" rx="9" ry="18" fill="#3a7ca5" transform="rotate(60)"/>
+        <ellipse cx="0" cy="-18" rx="9" ry="18" fill="#5b9ec9" transform="rotate(120)"/>
+        <ellipse cx="0" cy="-18" rx="9" ry="18" fill="#3a7ca5" transform="rotate(180)"/>
+        <ellipse cx="0" cy="-18" rx="9" ry="18" fill="#5b9ec9" transform="rotate(240)"/>
+        <ellipse cx="0" cy="-18" rx="9" ry="18" fill="#3a7ca5" transform="rotate(300)"/>
+        <circle cx="0" cy="0" r="7" fill="#f5e06e"/>
+      </g>
+    </svg>
+  </span>
+  <span class="flower flower-2">
+    <svg viewBox="0 0 80 80" fill="none">
+      <g transform="translate(40,40)">
+        <ellipse cx="0" cy="-16" rx="8" ry="16" fill="#8ec0d8" transform="rotate(0)"/>
+        <ellipse cx="0" cy="-16" rx="8" ry="16" fill="#5b9ec9" transform="rotate(72)"/>
+        <ellipse cx="0" cy="-16" rx="8" ry="16" fill="#8ec0d8" transform="rotate(144)"/>
+        <ellipse cx="0" cy="-16" rx="8" ry="16" fill="#5b9ec9" transform="rotate(216)"/>
+        <ellipse cx="0" cy="-16" rx="8" ry="16" fill="#8ec0d8" transform="rotate(288)"/>
+        <circle cx="0" cy="0" r="6" fill="#fdf3a0"/>
+      </g>
+    </svg>
+  </span>
+  <span class="flower flower-3">
+    <svg viewBox="0 0 60 60" fill="none">
+      <g transform="translate(30,30)">
+        <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#3a6fa0" transform="rotate(0)"/>
+        <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#3a6fa0" transform="rotate(60)"/>
+        <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#3a6fa0" transform="rotate(120)"/>
+        <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#3a6fa0" transform="rotate(180)"/>
+        <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#3a6fa0" transform="rotate(240)"/>
+        <ellipse cx="0" cy="-12" rx="6" ry="12" fill="#3a6fa0" transform="rotate(300)"/>
+        <circle cx="0" cy="0" r="5" fill="#f5e06e"/>
+      </g>
+    </svg>
+  </span>
+
+  <h1>Write me a letter,<br><em>not</em> just an email.</h1>
+  <p>Your thoughts, your feedback, a wild idea — I'd genuinely love to hear it all. Every word matters to me.</p>
+</div>
+
+<!-- ======== PAPER — above typewriter ======== -->
+<div class="paper-wrap">
+  <div class="paper-out" id="paperOut">
+    <div class="paper-content" id="paperContent"><span class="cursor"></span></div>
+  </div>
+</div>
+
+<!-- ======== TYPEWRITER ======== -->
+<div class="typewriter-stage">
+
+  <!-- Typewriter illustration — sky blue body -->
+  <svg class="typewriter-svg" viewBox="0 0 800 540" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Sky blue body gradient -->
+      <linearGradient id="twBody" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#a8d4ea"/>
+        <stop offset="0.35" stop-color="#7ab8d8"/>
+        <stop offset="1" stop-color="#5b9ec9"/>
+      </linearGradient>
+      <linearGradient id="twBottom" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#5b9ec9"/>
+        <stop offset="1" stop-color="#3a7ca5"/>
+      </linearGradient>
+      <linearGradient id="twPlaten" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2a5f82"/>
+        <stop offset="0.5" stop-color="#3a7ca5"/>
+        <stop offset="1" stop-color="#2a4f6a"/>
+      </linearGradient>
+      <linearGradient id="twKeybed" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2a4f6a"/>
+        <stop offset="1" stop-color="#1a3348"/>
+      </linearGradient>
+      <!-- Knob gradient — butter yellow -->
+      <radialGradient id="twKnob" cx="0.3" cy="0.3" r="0.7">
+        <stop offset="0" stop-color="#fdf3a0"/>
+        <stop offset="0.6" stop-color="#f5e06e"/>
+        <stop offset="1" stop-color="#c8a820"/>
+      </radialGradient>
+      <filter id="bodyShadow">
+        <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="rgba(58,127,165,0.3)"/>
+      </filter>
+    </defs>
+
+    <!-- Back platen bar -->
+    <rect x="178" y="88" width="444" height="62" rx="13" fill="url(#twPlaten)" stroke="#1a3348" stroke-width="2"/>
+
+    <!-- Platen knobs — butter yellow -->
+    <circle cx="168" cy="119" r="33" fill="url(#twKnob)" stroke="#a08820" stroke-width="2.5"/>
+    <circle cx="168" cy="119" r="22" fill="none" stroke="rgba(160,136,32,0.4)" stroke-width="1" stroke-dasharray="3 3"/>
+    <circle cx="168" cy="119" r="7" fill="#a08820"/>
+    <circle cx="632" cy="119" r="33" fill="url(#twKnob)" stroke="#a08820" stroke-width="2.5"/>
+    <circle cx="632" cy="119" r="22" fill="none" stroke="rgba(160,136,32,0.4)" stroke-width="1" stroke-dasharray="3 3"/>
+    <circle cx="632" cy="119" r="7" fill="#a08820"/>
+
+    <!-- Side pillars -->
+    <rect x="153" y="124" width="22" height="52" fill="#3a7ca5" stroke="#1a3348" stroke-width="1.5"/>
+    <rect x="625" y="124" width="22" height="52" fill="#3a7ca5" stroke="#1a3348" stroke-width="1.5"/>
+
+    <!-- Main body — sky blue -->
+    <path d="M118 162 Q118 140, 144 140 L656 140 Q682 140, 682 162 L687 202 Q702 222, 702 252 L702 462 Q702 492, 672 492 L128 492 Q98 492, 98 462 L98 252 Q98 222, 113 202 Z"
+          fill="url(#twBody)" stroke="#3a7ca5" stroke-width="2.5" filter="url(#bodyShadow)"/>
+
+    <!-- Lower belly — deeper blue -->
+    <path d="M98 382 Q400 414, 702 382 L702 462 Q702 492, 672 492 L128 492 Q98 492, 98 462 Z"
+          fill="url(#twBottom)" stroke="#3a7ca5" stroke-width="2"/>
+
+    <!-- Type-bar opening -->
+    <ellipse cx="400" cy="196" rx="172" ry="50" fill="#1a3348" stroke="#2a5f82" stroke-width="2"/>
+    <ellipse cx="400" cy="196" rx="162" ry="40" fill="#0a1e2e"/>
+    <!-- Type bar fan lines -->
+    <g stroke="#f5e06e" stroke-width="0.8" opacity="0.4">
+      <line x1="400" y1="235" x2="278" y2="200"/>
+      <line x1="400" y1="235" x2="313" y2="194"/>
+      <line x1="400" y1="235" x2="354" y2="190"/>
+      <line x1="400" y1="235" x2="398" y2="188"/>
+      <line x1="400" y1="235" x2="442" y2="190"/>
+      <line x1="400" y1="235" x2="484" y2="194"/>
+      <line x1="400" y1="235" x2="520" y2="200"/>
+    </g>
+
+    <!-- Paper guide bar on platen -->
+    <rect x="250" y="132" width="300" height="8" rx="4" fill="#2a5f82" stroke="#1a3348" stroke-width="1"/>
+
+    <!-- Brand plate — butter yellow -->
+    <rect x="332" y="248" width="136" height="30" rx="5" fill="#f5e06e" stroke="#a08820" stroke-width="1.5"/>
+    <text x="400" y="269" font-family="Cormorant Garamond, serif" font-size="17" font-style="italic" fill="#2a3f52" text-anchor="middle" font-weight="600">Sonu's Studio</text>
+
+    <!-- Ribbon spool (left) -->
+    <circle cx="295" cy="218" r="18" fill="#1a3348" stroke="#2a5f82" stroke-width="1.5"/>
+    <circle cx="295" cy="218" r="10" fill="#f5e06e" stroke="#a08820" stroke-width="1"/>
+    <circle cx="295" cy="218" r="3" fill="#a08820"/>
+
+    <!-- Right side tension knob -->
+    <circle cx="662" cy="272" r="15" fill="url(#twKnob)" stroke="#a08820" stroke-width="1.5"/>
+    <circle cx="662" cy="272" r="4" fill="#a08820"/>
+
+    <!-- Carriage return lever -->
+    <line x1="128" y1="168" x2="103" y2="200" stroke="#2a5f82" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="103" cy="200" r="9" fill="url(#twKnob)" stroke="#a08820" stroke-width="1.5"/>
+
+    <!-- Margin tabs -->
+    <rect x="210" y="284" width="10" height="16" rx="2" fill="#f5e06e" stroke="#a08820" stroke-width="1"/>
+    <rect x="560" y="284" width="10" height="16" rx="2" fill="#f5e06e" stroke="#a08820" stroke-width="1"/>
+
+    <!-- Keyboard bed -->
+    <rect x="133" y="296" width="534" height="196" rx="12" fill="url(#twKeybed)" stroke="#1a3348" stroke-width="2"/>
+    <!-- Subtle inner highlight on keybed -->
+    <rect x="140" y="302" width="520" height="4" rx="2" fill="rgba(255,255,255,0.06)"/>
+
+    <!-- Bottom rubber feet -->
+    <rect x="160" y="480" width="40" height="12" rx="6" fill="#1a3348"/>
+    <rect x="600" y="480" width="40" height="12" rx="6" fill="#1a3348"/>
+  </svg>
+
+  <!-- Keyboard overlay — butter yellow round keys -->
+  <div class="keyboard-overlay">
+    <div class="key-row" id="rowNum"></div>
+    <div class="key-row" id="rowTop"></div>
+    <div class="key-row offset-1" id="rowMid"></div>
+    <div class="key-row offset-2" id="rowBot"></div>
+    <div class="spacebar-row">
+      <div class="spacebar" id="spacebar"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======== FIELDS ======== -->
+<div class="fields-wrap">
+  <div class="field-group">
+    <label>Your name</label>
+    <input type="text" id="senderName" placeholder="Sarah Chen" />
+  </div>
+  <div class="field-group">
+    <label>Your email (for my reply)</label>
+    <input type="email" id="senderEmail" placeholder="sarah@example.com" />
+  </div>
+  <div class="field-group">
+    <label>About</label>
+    <input type="text" id="subject" placeholder="Collaboration / Job / Just saying hi" />
+  </div>
+</div>
+
+
+<!-- ======== STAMP PICKER ======== -->
+<div class="stamp-section">
+  <div class="stamp-section-label">Pick a stamp to seal your letter</div>
+  <div class="stamp-row" id="stampRow">
+    <!-- stamps injected by JS -->
+  </div>
+  <div class="stamp-hint">Choose one — it'll go on your letter corner ✦</div>
+</div>
+
+<!-- ======== BOTTOM ROW ======== -->
+<div class="bottom-row">
+  <div class="word-count" id="wordCount">Start typing your letter above ↑</div>
+  <button class="send-btn" id="sendBtn" onclick="sendLetter()" disabled>
+    ✉ Send my letter
+  </button>
+</div>
+
+<!-- ======== SUCCESS OVERLAY ======== -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <span class="envelope-anim">✉</span>
+    <h2>Your letter is on its way.</h2>
+    <p>I'll read your every word a hundred times over — your thoughts, suggestions and feedback are what make me grow, and that makes me genuinely happy.</p>
+    <p style="font-family:'Caveat',cursive; color:var(--sky-deep); font-size:22px; margin-bottom:20px; margin-top:-4px;">— Sonu, with gratitude ♡</p>
+    <button onclick="resetAndClose()">Write another →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ======== EMAILJS SDK ======== -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+/* =================================================================
+   ⚙️  YOUR EMAILJS CONFIG — replace these 3 values after signing up
+   at https://emailjs.com (free, takes ~10 min)
+   ================================================================= */
+const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // e.g. 'service_abc123'
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // e.g. 'template_xyz789'
+const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // e.g. 'aBcDeFgHiJkLmNoP'
+
+// Initialize EmailJS
+try { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); } catch(e) {}
+
+/* =================================================================
+   BUILD KEYBOARD
+   ================================================================= */
+const KEYS_NUM = [['1','!'],['2','@'],['3','#'],['4','$'],['5','%'],['6','^'],['7','&'],['8','*'],['9','('],['0',')']];
+const KEYS_TOP = ['Q','W','E','R','T','Y','U','I','O','P'];
+const KEYS_MID = ['A','S','D','F','G','H','J','K','L'];
+const KEYS_MID_SYM = [[';',':'],["'",'"']];
+const KEYS_BOT = ['Z','X','C','V','B','N','M'];
+const KEYS_BOT_SYM = [[',','<'],['.','>'],['/','?']];
+
+function makeKey(base, shifted, opts={}) {
+  const k = document.createElement('div');
+  k.className = 'vkey' + (opts.special ? ' special' : '') + (opts.wide ? ' special-wide' : '');
+  k.dataset.base = base;
+  if (shifted) k.dataset.shifted = shifted;
+  if (opts.action) k.dataset.action = opts.action;
+  if (opts.special) k.innerHTML = `<span class="base">${base}</span>`;
+  else if (shifted) k.innerHTML = `<span class="shifted">${shifted}</span><span class="base">${base}</span>`;
+  else k.innerHTML = `<span class="base">${base}</span>`;
+  k.addEventListener('click', () => handleKey(k));
+  return k;
+}
+
+const rowNum = document.getElementById('rowNum');
+KEYS_NUM.forEach(([b,s]) => rowNum.appendChild(makeKey(b,s)));
+rowNum.appendChild(makeKey('⌫','',{special:true,wide:true,action:'BACK'}));
+
+const rowTop = document.getElementById('rowTop');
+KEYS_TOP.forEach(ch => rowTop.appendChild(makeKey(ch,'')));
+
+const rowMid = document.getElementById('rowMid');
+rowMid.appendChild(makeKey('Caps','',{special:true,action:'CAPS'}));
+KEYS_MID.forEach(ch => rowMid.appendChild(makeKey(ch,'')));
+KEYS_MID_SYM.forEach(([b,s]) => rowMid.appendChild(makeKey(b,s)));
+rowMid.appendChild(makeKey('⏎','',{special:true,action:'ENTER'}));
+
+const rowBot = document.getElementById('rowBot');
+rowBot.appendChild(makeKey('Shift','',{special:true,wide:true,action:'SHIFT'}));
+KEYS_BOT.forEach(ch => rowBot.appendChild(makeKey(ch,'')));
+KEYS_BOT_SYM.forEach(([b,s]) => rowBot.appendChild(makeKey(b,s)));
+
+/* =================================================================
+   TYPING ENGINE
+   ================================================================= */
+let text = '', caps = false, shift = false, paperShown = false;
+const paperOut = document.getElementById('paperOut');
+const paperContent = document.getElementById('paperContent');
+
+function showPaper() {
+  if (!paperShown) { paperOut.classList.add('visible'); paperShown = true; }
+}
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function render() {
+  paperContent.innerHTML = esc(text).replace(/\n/g,'<br>') + '<span class="cursor"></span>';
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  const wc = document.getElementById('wordCount');
+  wc.textContent = words === 0 ? 'Start typing your letter above ↑' : `${words} word${words===1?'':'s'} written`;
+  document.getElementById('sendBtn').disabled = text.trim().length < 5;
+}
+
+/* SOUND */
+let actx;
+function ac(){ if(!actx) actx=new(window.AudioContext||window.webkitAudioContext)(); return actx; }
+function clack(sp=false){
+  try{
+    const ctx=ac(),now=ctx.currentTime,bs=ctx.sampleRate*0.09;
+    const buf=ctx.createBuffer(1,bs,ctx.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<bs;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/bs,2.2);
+    const n=ctx.createBufferSource(); n.buffer=buf;
+    const f=ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=sp?650:1200+Math.random()*250; f.Q.value=1.3;
+    const g=ctx.createGain(); g.gain.setValueAtTime(0.34,now); g.gain.exponentialRampToValueAtTime(0.001,now+0.08);
+    n.connect(f).connect(g).connect(ctx.destination); n.start(now);
+    const o=ctx.createOscillator(),og=ctx.createGain();
+    o.frequency.setValueAtTime(sp?230:360+Math.random()*100,now); o.frequency.exponentialRampToValueAtTime(75,now+0.05);
+    og.gain.setValueAtTime(0.11,now); og.gain.exponentialRampToValueAtTime(0.001,now+0.06);
+    o.connect(og).connect(ctx.destination); o.start(now); o.stop(now+0.1);
+  }catch(e){}
+}
+function ding(){
+  try{
+    const ctx=ac(),now=ctx.currentTime;
+    [1760,2640].forEach((fr,i)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.frequency.value=fr; g.gain.setValueAtTime(0.16,now+i*0.04); g.gain.exponentialRampToValueAtTime(0.001,now+i*0.04+0.5);
+      o.connect(g).connect(ctx.destination); o.start(now+i*0.04); o.stop(now+i*0.04+0.5);
+    });
+  }catch(e){}
+}
+
+function flash(el){ el.classList.add('pressed'); setTimeout(()=>el.classList.remove('pressed'),90); }
+function setCaps(v){ caps=v; document.querySelectorAll('.vkey[data-action="CAPS"]').forEach(el=>el.classList.toggle('active-cap',caps)); }
+function setShift(v){ shift=v; document.querySelectorAll('.vkey[data-action="SHIFT"]').forEach(el=>el.classList.toggle('active-cap',shift)); }
+
+function handleKey(el) {
+  const action = el.dataset.action;
+  if (action==='CAPS'){ setCaps(!caps); return; }
+  if (action==='SHIFT'){ setShift(!shift); return; }
+  flash(el);
+  if (action==='BACK'){ text=text.slice(0,-1); clack(); }
+  else if (action==='ENTER'){ text+='\n'; ding(); }
+  else {
+    let ch = el.dataset.base;
+    if (shift && el.dataset.shifted) ch = el.dataset.shifted;
+    else if (/[a-z]/i.test(ch)) ch = (caps^shift) ? ch.toUpperCase() : ch.toLowerCase();
+    text += ch; clack();
+    if (shift) setShift(false);
+  }
+  showPaper(); render();
+}
+
+// Spacebar
+const sb = document.getElementById('spacebar');
+sb.onclick = ()=>{ sb.classList.add('pressed'); setTimeout(()=>sb.classList.remove('pressed'),90); text+=' '; clack(true); showPaper(); render(); };
+
+// Real keyboard
+document.addEventListener('keydown', e => {
+  if (e.target.tagName==='INPUT') return;
+  if (e.ctrlKey||e.metaKey||e.altKey) return;
+  const k = e.key;
+  if (k==='Backspace'){ e.preventDefault(); const el=document.querySelector('.vkey[data-action="BACK"]'); if(el)flash(el); text=text.slice(0,-1); clack(); showPaper(); render(); }
+  else if (k==='Enter'){ e.preventDefault(); const el=document.querySelector('.vkey[data-action="ENTER"]'); if(el)flash(el); text+='\n'; ding(); showPaper(); render(); }
+  else if (k==='CapsLock'){ setCaps(!caps); }
+  else if (k==='Shift'){ if(!shift) setShift(true); }
+  else if (k===' '){ e.preventDefault(); sb.classList.add('pressed'); setTimeout(()=>sb.classList.remove('pressed'),90); text+=' '; clack(true); showPaper(); render(); }
+  else if (k.length===1){ e.preventDefault();
+    const up=k.toUpperCase();
+    let found=null;
+    document.querySelectorAll('.vkey').forEach(el=>{ if(el.dataset.base===k||el.dataset.base===up||el.dataset.shifted===k) found=el; });
+    if(found) flash(found);
+    text+=k; clack(); showPaper(); render();
+  }
+});
+document.addEventListener('keyup', e=>{ if(e.key==='Shift') setShift(false); });
+
+
+/* =================================================================
+   STAMPS
+   ================================================================= */
+const STAMP_DEFS = [
+  { id:'tulip', bg:'#ffdfe5', label:'tulip', w:72, h:90, svg:`<svg width="72" height="90" viewBox="0 0 72 90" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="90" fill="#ffdfe5"/><text x="8" y="16" font-family="Special Elite" font-size="8" fill="#8a3a3a">♡</text><g transform="translate(36 48)"><path d="M0 18C0 18-20 4-20-10c0-8 6-14 12-14 3 0 6 2 8 5 2-3 5-5 8-5 6 0 12 6 12 14C20 4 0 18 0 18Z" fill="#e07d92" stroke="#8a3a3a" stroke-width="0.8"/></g><text x="36" y="80" font-family="Cormorant Garamond" font-style="italic" font-size="9" fill="#8a3a3a" text-anchor="middle">love</text></svg>` },
+  { id:'flower', bg:'#d9ebf5', label:'bloom', w:72, h:90, svg:`<svg width="72" height="90" viewBox="0 0 72 90" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="90" fill="#d9ebf5"/><text x="8" y="16" font-family="Special Elite" font-size="8" fill="#4d83a0">15</text><g transform="translate(36 46)"><ellipse cx="0" cy="-14" rx="7" ry="13" fill="#8ec0d8" transform="rotate(0)"/><ellipse cx="0" cy="-14" rx="7" ry="13" fill="#5b9ec9" transform="rotate(60)"/><ellipse cx="0" cy="-14" rx="7" ry="13" fill="#8ec0d8" transform="rotate(120)"/><ellipse cx="0" cy="-14" rx="7" ry="13" fill="#5b9ec9" transform="rotate(180)"/><ellipse cx="0" cy="-14" rx="7" ry="13" fill="#8ec0d8" transform="rotate(240)"/><ellipse cx="0" cy="-14" rx="7" ry="13" fill="#5b9ec9" transform="rotate(300)"/><circle cx="0" cy="0" r="6" fill="#f5e06e"/></g><text x="36" y="80" font-family="Cormorant Garamond" font-style="italic" font-size="9" fill="#4d83a0" text-anchor="middle">bloom</text></svg>` },
+  { id:'sun', bg:'#fff9cc', label:'sunny', w:72, h:90, svg:`<svg width="72" height="90" viewBox="0 0 72 90" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="90" fill="#fff9cc"/><text x="8" y="16" font-family="Special Elite" font-size="8" fill="#a07a3f">50</text><g transform="translate(36 46)"><circle cx="0" cy="0" r="12" fill="#fff5d9" stroke="#c89b5e" stroke-width="1"/><g stroke="#c89b5e" stroke-width="1.4" stroke-linecap="round"><line x1="0" y1="-19" x2="0" y2="-15"/><line x1="0" y1="15" x2="0" y2="19"/><line x1="-19" y1="0" x2="-15" y2="0"/><line x1="15" y1="0" x2="19" y2="0"/><line x1="-14" y1="-14" x2="-11" y2="-11"/><line x1="14" y1="-14" x2="11" y2="-11"/><line x1="-14" y1="14" x2="-11" y2="11"/><line x1="14" y1="14" x2="11" y2="11"/></g><path d="M-4 2 Q0 6 4 2" stroke="#a07a3f" stroke-width="0.8" fill="none"/><circle cx="-4" cy="-2" r="1.2" fill="#a07a3f"/><circle cx="4" cy="-2" r="1.2" fill="#a07a3f"/></g><text x="36" y="80" font-family="Cormorant Garamond" font-style="italic" font-size="9" fill="#a07a3f" text-anchor="middle">sunshine</text></svg>` },
+  { id:'star', bg:'#eef0ff', label:'wish', w:72, h:90, svg:`<svg width="72" height="90" viewBox="0 0 72 90" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="90" fill="#eef0ff"/><text x="8" y="16" font-family="Special Elite" font-size="8" fill="#5a5a9a">★</text><g transform="translate(36 46)"><path d="M0-18 5-6 18-6 8 2 12 14 0 8-12 14-8 2-18-6-5-6Z" fill="#b8bce8" stroke="#5a5a9a" stroke-width="0.8"/></g><text x="36" y="80" font-family="Cormorant Garamond" font-style="italic" font-size="9" fill="#5a5a9a" text-anchor="middle">wish</text></svg>` },
+  { id:'butterfly', bg:'#f0e8f8', label:'flutter', w:72, h:90, svg:`<svg width="72" height="90" viewBox="0 0 72 90" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="90" fill="#f0e8f8"/><text x="8" y="16" font-family="Special Elite" font-size="8" fill="#7a5a8a">25</text><g transform="translate(36 46)"><path d="M0-14Q-8-8-8 0Q-8 8 0 12Q8 8 8 0Q8-8 0-14" fill="#c8b8e0" stroke="#7a5a8a" stroke-width="0.8"/><path d="M-8 0Q-16-4-18 0Q-18 6-10 8" fill="#d8c8ee" stroke="#7a5a8a" stroke-width="0.7"/><path d="M8 0Q16-4 18 0Q18 6 10 8" fill="#d8c8ee" stroke="#7a5a8a" stroke-width="0.7"/><circle cx="-3" cy="-4" r="1.2" fill="#fff"/></g><text x="36" y="80" font-family="Cormorant Garamond" font-style="italic" font-size="9" fill="#7a5a8a" text-anchor="middle">flutter</text></svg>` },
+  { id:'leaf', bg:'#ddf0e4', label:'bloom', w:72, h:90, svg:`<svg width="72" height="90" viewBox="0 0 72 90" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="90" fill="#ddf0e4"/><text x="8" y="16" font-family="Special Elite" font-size="8" fill="#3a7a50">10</text><g transform="translate(36 46)"><path d="M0-20Q12-10 12 0Q12 14 0 18Q-12 14-12 0Q-12-10 0-20Z" fill="#8bc4a0" stroke="#3a7a50" stroke-width="0.8"/><line x1="0" y1="-18" x2="0" y2="17" stroke="#3a7a50" stroke-width="1"/><path d="M0-4Q6 0 10 4" stroke="#3a7a50" stroke-width="0.7" fill="none"/><path d="M0-4Q-6 0-10 4" stroke="#3a7a50" stroke-width="0.7" fill="none"/><path d="M0 6Q5 9 8 12" stroke="#3a7a50" stroke-width="0.7" fill="none"/><path d="M0 6Q-5 9-8 12" stroke="#3a7a50" stroke-width="0.7" fill="none"/></g><text x="36" y="80" font-family="Cormorant Garamond" font-style="italic" font-size="9" fill="#3a7a50" text-anchor="middle">fresh</text></svg>` },
+];
+
+let pickedStamp = null;
+
+function renderStamps() {
+  const row = document.getElementById('stampRow');
+  if (!row) return;
+  row.innerHTML = '';
+  STAMP_DEFS.forEach(s => {
+    const wrap = document.createElement('div');
+    wrap.className = 's-stamp' + (pickedStamp === s.id ? ' picked' : '');
+    wrap.innerHTML = s.svg;
+    wrap.title = s.label;
+    wrap.onclick = () => {
+      pickedStamp = pickedStamp === s.id ? null : s.id;
+      renderStamps();
+      updatePaperStamp();
+    };
+    row.appendChild(wrap);
+  });
+}
+
+function updatePaperStamp() {
+  // Show tiny stamp on paper top-right corner
+  let area = document.getElementById('paperStampCorner');
+  if (!area) {
+    area = document.createElement('div');
+    area.id = 'paperStampCorner';
+    area.style.cssText = 'position:absolute;top:10px;right:10px;z-index:10;transform:rotate(-5deg);filter:drop-shadow(0 2px 6px rgba(0,0,0,0.18));pointer-events:none;';
+    document.getElementById('paperOut').appendChild(area);
+  }
+  if (!pickedStamp) { area.innerHTML = ''; return; }
+  const s = STAMP_DEFS.find(x => x.id === pickedStamp);
+  if (!s) return;
+  // Render at half size on paper
+  area.innerHTML = s.svg.replace('width="72"','width="44"').replace('height="90"','height="55"').replace('viewBox="0 0 72 90"','viewBox="0 0 72 90"');
+}
+
+renderStamps();
+
+/* =================================================================
+   SEND VIA EMAILJS
+   ================================================================= */
+async function sendLetter() {
+  const name    = document.getElementById('senderName').value.trim();
+  const email   = document.getElementById('senderEmail').value.trim();
+  const subject = document.getElementById('subject').value.trim();
+
+  if (!name)  { toast('Please enter your name ♡'); return; }
+  if (!email || !email.includes('@')) { toast('Please enter a valid email'); return; }
+  if (text.trim().length < 5) { toast('Write something first ✉'); return; }
+
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  // Check if EmailJS is configured
+  if (EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID') {
+    // Demo mode — show success without actually sending
+    await new Promise(r => setTimeout(r, 1200));
+    showSuccess();
+    return;
+  }
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      from_name:  name,
+      from_email: email,
+      subject:    subject || 'A letter from ' + name,
+      message:    text,
+      // Formatted version for your email template
+      letter_body: `Dear Sonu,\n\n${text}\n\nWith warm regards,\n${name}\n${email}`,
+      stamp: pickedStamp || 'none'
+    });
+    showSuccess();
+  } catch (err) {
+    console.error('EmailJS error:', err);
+    toast('Something went wrong — please try again');
+    btn.disabled = false;
+    btn.textContent = '✉ Send my letter';
+  }
+}
+
+function showSuccess() {
+  ding();
+  document.getElementById('successOverlay').classList.add('show');
+  // Reset
+  text = ''; paperShown = false;
+  paperOut.classList.remove('visible');
+  render();
+  document.getElementById('senderName').value = '';
+  document.getElementById('senderEmail').value = '';
+  document.getElementById('subject').value = '';
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  btn.textContent = '✉ Send my letter';
+}
+
+
+function resetAndClose() {
+  document.getElementById('successOverlay').classList.remove('show');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+window.sendLetter = sendLetter;
+</script>
+
+</body>
+</html>
