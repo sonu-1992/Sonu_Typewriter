@@ -644,19 +644,8 @@
 <div class="toast" id="toast"></div>
 
 <!-- ======== EMAILJS SDK ======== -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
 <script>
-/* =================================================================
-   ⚙️  YOUR EMAILJS CONFIG — replace these 3 values after signing up
-   at https://emailjs.com (free, takes ~10 min)
-   ================================================================= */
-const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // e.g. 'service_abc123'
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // e.g. 'template_xyz789'
-const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // e.g. 'aBcDeFgHiJkLmNoP'
-
-// Initialize EmailJS
-try { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); } catch(e) {}
+/* Formspree endpoint: https://formspree.io/f/xdajbpjb */
 
 /* =================================================================
    BUILD KEYBOARD
@@ -859,27 +848,24 @@ async function sendLetter() {
   btn.disabled = true;
   btn.textContent = 'Sending...';
 
-  // Check if EmailJS is configured
-  if (EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID') {
-    // Demo mode — show success without actually sending
-    await new Promise(r => setTimeout(r, 1200));
-    showSuccess();
-    return;
-  }
-
   try {
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      from_name:  name,
-      from_email: email,
-      subject:    subject || 'A letter from ' + name,
-      message:    text,
-      // Formatted version for your email template
-      letter_body: `Dear Sonu,\n\n${text}\n\nWith warm regards,\n${name}\n${email}`,
-      stamp: pickedStamp || 'none'
+    const res = await fetch('https://formspree.io/f/xdajbpjb', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        name:    name,
+        email:   email,
+        subject: subject || 'A letter from ' + name,
+        message: `Dear Sonu,\n\n${text}\n\nWith warm regards,\n${name}\n${email}`,
+        stamp:   pickedStamp || 'none'
+      })
     });
-    showSuccess();
+    if (res.ok) {
+      showSuccess();
+    } else {
+      throw new Error('Failed');
+    }
   } catch (err) {
-    console.error('EmailJS error:', err);
     toast('Something went wrong — please try again');
     btn.disabled = false;
     btn.textContent = '✉ Send my letter';
